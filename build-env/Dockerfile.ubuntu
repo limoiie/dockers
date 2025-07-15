@@ -1,0 +1,20 @@
+ARG BASE_IMAGE_VERSION=20.04
+
+FROM ubuntu:${BASE_IMAGE_VERSION}
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    autoconf \
+    automake \
+    build-essential \
+    cmake \
+    git \
+    libtool \
+    libeigen3-dev \
+    libssl-dev \
+    pkg-config
+
+ENV OPENSSL_ROOT_DIR=/usr/include/openssl
+
+WORKDIR /app
