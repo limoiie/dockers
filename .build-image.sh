@@ -83,14 +83,19 @@ check_dockerfile_version() {
 
 # Build image
 build_image() {
-    local image_name_suffix=""
+    local base_image_name=""
+    local base_image_version=""
     local dockerfile_variation=""
     local build_args=()
     local dry_run=false
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --image-name-suffix)
-                image_name_suffix="$2"
+            --base-image-name)
+                base_image_name="$2"
+                shift 2
+                ;;
+            --base-image-version)
+                base_image_version="$2"
                 shift 2
                 ;;
             --dockerfile-variation)
@@ -111,15 +116,14 @@ build_image() {
         esac
     done
 
-    if [[ -n "$image_name_suffix" ]]; then
-        local image_name="$(basename "$(pwd)")_${image_name_suffix}"
-    else
-        local image_name="$(basename "$(pwd)")"
-    fi
+    local image_sub_name="$(basename "$(pwd)")"
+    local image_sub_version=$(check_dockerfile_version --dockerfile-variation "${dockerfile_variation}")
 
-    echo "Building ${image_name} with auto-version and ${dockerfile_variation} variation"
+    local image_name="${base_image_name}/${image_sub_name}"
+    local image_version="${base_image_version}-${image_sub_version}"
+
+    echo "Building ${image_name} with auto-version ${image_sub_version} and ${dockerfile_variation} variation"
     echo "Build args: ${build_args[*]}"
-    local image_version=$(check_dockerfile_version --dockerfile-variation "${dockerfile_variation}")
 
     local image_tag="${image_name}:${image_version}"
     local image_latest_tag="${image_name}:latest"
