@@ -1,0 +1,8 @@
+FROM kalilinux/kali-rolling:latest
+
+RUN sed -i "s@http.kali.org@mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
+RUN apt update && (apt install -y kali-linux-headless || \
+    (apt update && apt install --fix-missing -y kali-linux-headless) || \
+    (apt update && apt install --fix-broken -y))
+
+WORKDIR /root
